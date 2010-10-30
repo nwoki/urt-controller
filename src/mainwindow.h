@@ -3,13 +3,25 @@
 
 #include <KMainWindow>
 
+class KAboutData;
+class KAction;
+class KApplication;
+class KMenuBar;
+
 class MainWindow : public KMainWindow
 {
 public:
-    MainWindow( QWidget *parent = 0 );
+    MainWindow( KApplication *app, QWidget *parent = 0 );
 
 private:
+    void setupMenu();
+    KMenuBar *m_menuBar;
 
+    KAction *m_quitAction       // quit program
+    , *m_addServerAction;       // add new server
+    KApplication *m_app;        // pointer to application object
+
+    KAboutData *m_about;        // program about data
 };
 
 

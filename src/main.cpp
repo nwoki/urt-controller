@@ -20,10 +20,10 @@ int main( int argc, char **argv ) {
 
     KCmdLineArgs::init( argc, argv, &aboutData );
 
-    KApplication app;
+    KApplication *app = new KApplication();
 
-    MainWindow *main = new MainWindow();
+    MainWindow *main = new MainWindow( app );
     main->show();
 
-    return app.exec();
+    return app->exec();
 }
