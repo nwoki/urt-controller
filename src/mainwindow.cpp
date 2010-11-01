@@ -8,12 +8,17 @@
 #include <KMenu>
 #include <KMenuBar>
 #include <KSystemTrayIcon>
+#include <KToolBar>
+
 
 MainWindow::MainWindow( KApplication *app, QWidget *parent )
     : KMainWindow( parent )
     , m_menuBar( 0 )
     , m_quitAction( 0 )
     , m_addServerAction( 0 )
+    , m_editServerAction( 0 )
+    , m_removeServerAction( 0 )
+    , m_refreshServerAction( 0 )
     , m_app( app )
     , m_about( 0 )
     , m_trayIcon( 0 )
@@ -31,6 +36,7 @@ void MainWindow::setupMenu()
 {
     m_menuBar = new KMenuBar( this );
 
+    // program about data
     m_about = new KAboutData(
         "urtcontroller",                        // The program name used internally.
         0,                                      // The message catalog name. If null, program name is used instead.
@@ -47,12 +53,18 @@ void MainWindow::setupMenu()
     m_about->addAuthor( ki18n( "Francesco Nwokeka" ), ki18n( "Author" ), "francesco.nwokeka@gmail.com" );
 
     KMenu *fileMenu = new KMenu( i18n( "&File" ) );
-    KMenu *editMenu = new KMenu( i18n( "&Edit" ) );
+    KMenu *editMenu = new KMenu( i18n( "&Settings" ) );
     KHelpMenu *helpMenu = new KHelpMenu( this, m_about );
+    KToolBar *toolBar = new KToolBar( this );
 
-
+    // menu actions
     m_quitAction = new KAction( KIcon( "application-exit"), i18n( "&Quit" ), this );
-    m_addServerAction = new KAction( KIcon( "network-server" ), i18n( "&AddNewServer" ), this );
+    m_editServerAction = new KAction( KIcon( "network-server" ), i18n( "&EditServer" ), this );
+
+    // toolbar actions
+    m_addServerAction = new KAction( KIcon( "list-add" ), i18n( "&AddServer" ), this );
+    m_removeServerAction = new KAction( KIcon( "list-remove" ), i18n( "&RemoveServer" ), this );
+    m_refreshServerAction = new KAction( KIcon( "view-refresh" ), i18n( "Re&freshServer" ), this );
 
     // connect actions
     connect( m_quitAction, SIGNAL( triggered() ), m_app, SLOT( quit() ) );
@@ -62,12 +74,18 @@ void MainWindow::setupMenu()
     fileMenu->addAction( m_quitAction );
 
     // edit menu setup
-    editMenu->addAction( m_addServerAction );
+    editMenu->addAction( m_editServerAction );
+
+    // toolbar actions
+    toolBar->addAction( m_refreshServerAction );
+    toolBar->addAction( m_addServerAction );
+    toolBar->addAction( m_removeServerAction );
 
     // menu bar
     m_menuBar->addMenu( fileMenu );
     m_menuBar->addMenu( editMenu );
     m_menuBar->addMenu( helpMenu->menu());
+
 
     setMenuBar( m_menuBar );
 }
