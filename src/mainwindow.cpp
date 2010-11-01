@@ -16,6 +16,7 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     , m_app( app )
     , m_about( 0 )
 {
+    setWindowIcon( KIcon( "urtcontroller" ) );
     setFixedSize( 600, 400 );
     setupMenu();
 }
@@ -43,6 +44,7 @@ void MainWindow::setupMenu()
     KMenu *fileMenu = new KMenu( i18n( "&File" ) );
     KMenu *editMenu = new KMenu( i18n( "&Edit" ) );
     KHelpMenu *helpMenu = new KHelpMenu( this, m_about );
+
 
     m_quitAction = new KAction( KIcon( "application-exit"), i18n( "&Quit" ), this );
     m_addServerAction = new KAction( KIcon( "network-server" ), i18n( "&AddNewServer" ), this );
