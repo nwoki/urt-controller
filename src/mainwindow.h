@@ -7,6 +7,7 @@ class KAboutData;
 class KAction;
 class KApplication;
 class KMenuBar;
+class KSystemTrayIcon;
 
 class MainWindow : public KMainWindow
 {
@@ -22,6 +23,7 @@ private:
     KApplication *m_app;        // pointer to application object
 
     KAboutData *m_about;        // program about data
+    KSystemTrayIcon *m_trayIcon;// program tray icon
 };
 
 

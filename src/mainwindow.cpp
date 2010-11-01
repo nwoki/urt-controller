@@ -4,9 +4,10 @@
 #include <KAction>
 #include <KApplication>
 #include <KHelpMenu>
+#include <KLocale>
 #include <KMenu>
 #include <KMenuBar>
-#include <KLocale>
+#include <KSystemTrayIcon>
 
 MainWindow::MainWindow( KApplication *app, QWidget *parent )
     : KMainWindow( parent )
@@ -15,10 +16,14 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     , m_addServerAction( 0 )
     , m_app( app )
     , m_about( 0 )
+    , m_trayIcon( 0 )
 {
     setWindowIcon( KIcon( "urtcontroller" ) );
     setFixedSize( 600, 400 );
     setupMenu();
+
+    m_trayIcon = new KSystemTrayIcon( KIcon( "urtcontroller" ), this );
+    m_trayIcon->setVisible( true );             // Show immediatly, on by default
 }
 
 
