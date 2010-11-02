@@ -19,10 +19,12 @@ class ServerManager : public QWidget
 public:
     ServerManager( QWidget *parent = 0 );
 
-    void addNewServerGroup();
+    void addNewServerGroup( const QString &name );
     QDockWidget *dockWidget() const;
+    KListWidget *groupsList() const;
 
 private:
+    void refreshGroups();                       // refresh groups list
     void setupGui();                            // setup gui layout
 
     KListWidget *m_serverGroupsList;            // list widget with user's server groups
@@ -30,7 +32,7 @@ private:
     , *m_playersTable                           // table showing info on players in a server
     , *m_serverInfoTable;                       // table with server info
     QDockWidget *m_listDock;                    // dock used to contain listwidget and set to mainwindow
-    QVector< ServerGroup* > m_serverGroups;     // string -> groupName. vector -> group servers
+    QVector< ServerGroup* > m_serverGroups;     // vector with server groups
 };
 
 #endif

@@ -18,6 +18,8 @@ public:
     void addServer( Server *server );
     void addServer( const QString &name, const QString &address, const QString &rcon, int port );
 
+    QString groupName() const;
+
 private:
     QString m_groupName;
     QVector< Server* > m_servers;

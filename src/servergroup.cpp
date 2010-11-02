@@ -21,4 +21,10 @@ void ServerGroup::addServer( const QString& name, const QString& address, const 
     m_servers.push_back( auxServer );
 }
 
+QString ServerGroup::groupName() const
+{
+    return m_groupName;
+}
+
+
 

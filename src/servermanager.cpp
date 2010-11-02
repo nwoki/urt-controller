@@ -1,3 +1,4 @@
+#include "servergroup.h"
 #include "servermanager.h"
 
 #include <KListWidget>
@@ -16,12 +17,31 @@ ServerManager::ServerManager( QWidget *parent )
     , m_listDock( 0 )
 {
     setupGui();
+}
 
+void ServerManager::addNewServerGroup( const QString& name )
+{
+    ServerGroup *auxServerGroup = new ServerGroup( name );
+    m_serverGroups.push_back( auxServerGroup );
+    refreshGroups();
 }
 
 QDockWidget* ServerManager::dockWidget() const
 {
     return m_listDock;
+}
+
+void ServerManager::refreshGroups()
+{
+    if( m_serverGroupsList->count() < m_serverGroups.count() ) {  // need to update list ADD
+        for( int i = m_serverGroupsList->count(); i < m_serverGroups.count(); i++ )
+            m_serverGroupsList->addItem( new QListWidgetItem( m_serverGroups.at( i )->groupName() ) );
+    }
+}
+
+KListWidget* ServerManager::groupsList() const
+{
+    return m_serverGroupsList;
 }
 
 
