@@ -1,6 +1,6 @@
 project( urtcontroller )
 
-find_package( KDE4 REQUIRED )                      #locates the package that you ask it for (in this case KDE4) and sets some variables describing the location of the package's headers and libraries
+find_package( KDE4 REQUIRED )
 include( KDE4Defaults )
 include_directories( ${KDE4_INCLUDES} )
 
@@ -9,6 +9,7 @@ add_subdirectory( icons )
 set(urtcontroller_SRCS
     src/main.cpp
     src/mainwindow.cpp
+    src/server.cpp
 )
 
 kde4_add_executable( urtcontroller ${urtcontroller_SRCS} )

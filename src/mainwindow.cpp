@@ -13,7 +13,6 @@
 
 MainWindow::MainWindow( KApplication *app, QWidget *parent )
     : KMainWindow( parent )
-    , m_menuBar( 0 )
     , m_quitAction( 0 )
     , m_addServerAction( 0 )
     , m_editServerAction( 0 )
@@ -34,7 +33,7 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
 
 void MainWindow::setupMenu()
 {
-    m_menuBar = new KMenuBar( this );
+    KMenuBar *menuBar = new KMenuBar( this );
 
     // program about data
     m_about = new KAboutData(
@@ -64,7 +63,7 @@ void MainWindow::setupMenu()
     // toolbar actions
     m_addServerAction = new KAction( KIcon( "list-add" ), i18n( "&AddServer" ), this );
     m_removeServerAction = new KAction( KIcon( "list-remove" ), i18n( "&RemoveServer" ), this );
-    m_refreshServerAction = new KAction( KIcon( "view-refresh" ), i18n( "Re&freshServer" ), this );
+    m_refreshServerAction = new KAction( KIcon( "view-refresh" ), i18n( "Re&freshServers" ), this );
 
     // connect actions
     connect( m_quitAction, SIGNAL( triggered() ), m_app, SLOT( quit() ) );
@@ -82,11 +81,11 @@ void MainWindow::setupMenu()
     toolBar->addAction( m_removeServerAction );
 
     // menu bar
-    m_menuBar->addMenu( fileMenu );
-    m_menuBar->addMenu( editMenu );
-    m_menuBar->addMenu( helpMenu->menu());
+    menuBar->addMenu( fileMenu );
+    menuBar->addMenu( editMenu );
+    menuBar->addMenu( helpMenu->menu());
 
 
-    setMenuBar( m_menuBar );
+    setMenuBar( menuBar );
 }
 

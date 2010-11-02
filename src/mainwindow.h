@@ -6,8 +6,11 @@
 class KAboutData;
 class KAction;
 class KApplication;
-class KMenuBar;
 class KSystemTrayIcon;
+
+/*
+ * Mainwindow class that has menus and useful stuff
+ */
 
 class MainWindow : public KMainWindow
 {
@@ -16,7 +19,6 @@ public:
 
 private:
     void setupMenu();           // setup mainwindow menu and dock
-    KMenuBar *m_menuBar;
 
     KAction *m_quitAction       // quit program
     , *m_addServerAction        // add new server
