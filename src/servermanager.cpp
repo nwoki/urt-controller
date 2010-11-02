@@ -53,10 +53,65 @@ QDockWidget* ServerManager::dockWidget() const
 
 void ServerManager::refreshGroups()
 {
-    if( m_serverGroupsList->count() < m_serverGroups.count() ) {  // need to update list ADD
+    if( m_serverGroupsList->count() < m_serverGroups.count() ) {        // update list ADD
         for( int i = m_serverGroupsList->count(); i < m_serverGroups.count(); i++ )
             m_serverGroupsList->addItem( new QListWidgetItem( m_serverGroups.at( i )->groupName() ) );
     }
+    else if( m_serverGroupsList->count() > m_serverGroups.count() ) {   // elimate from list REMOVE
+        for( int i = 0; i < m_serverGroupsList->count(); i++ ) {
+
+            QListWidgetItem *auxItem = m_serverGroupsList->item( i );
+            ServerGroup *auxServerGroup;
+
+            int j = 0;
+            bool found = false;
+
+            while( j < m_serverGroups.count() && !found ) {
+                auxServerGroup = m_serverGroups.at( j );
+                if( auxItem->text() == auxServerGroup->groupName() )
+                    found = true;
+            }
+            if( !found ) {      // eliminate serverGroup
+                m_serverGroupsList->removeItemWidget( m_serverGroupsList->item( i ) );
+                delete auxItem; // do i need this?
+            }
+        }
+    }
+
+    if( m_serverGroups.empty() )    // notify mainwindow
+        emit emptyServerList();
+}
+
+void ServerManager::removeServerGroup( const QString& name )
+{
+    ServerGroup *auxServerGroup;
+    bool found = false;
+    int i = 0;
+
+    while( i < m_serverGroups.count() && !found ) {
+        if( m_serverGroups.at( i )->groupName() == name ) {
+            auxServerGroup = m_serverGroups.at( i );
+            m_serverGroups.remove( i );
+            delete auxServerGroup;
+            found = true;
+        }
+        else
+            i++;
+    }
+    refreshGroups();    // to update list
+}
+
+QString ServerManager::serverGroupName( int index )
+{
+    if( index > m_serverGroups.count() )    // over the limit!
+        return i18n( "<empty>" );
+    else
+        return m_serverGroups.at( index )->groupName();
+}
+
+int ServerManager::serverGroups() const
+{
+    return m_serverGroups.count();
 }
 
 KListWidget* ServerManager::groupsList() const

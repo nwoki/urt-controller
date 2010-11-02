@@ -24,6 +24,7 @@
 #include <KAboutData>
 #include <KAction>
 #include <KApplication>
+#include <KComboBox>
 #include <KDialog>
 #include <KHelpMenu>
 #include <KLineEdit>
@@ -51,7 +52,9 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     , m_trayIcon( 0 )
     , m_serverManager( 0 )
     , m_addServerGroupDialog( 0 )
+    , m_removeServerGroupDialog( 0 )
     , m_dialogServerGroupName( 0 )
+    , m_removeServerGroupName( 0 )
 {
     setWindowIcon( KIcon( "urtcontroller" ) );
     setMinimumSize( 600, 600 );
@@ -65,11 +68,13 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     addDockWidget( Qt::LeftDockWidgetArea, m_serverManager->dockWidget() );
     setCentralWidget( m_serverManager );
 
-    // connect to activate toolbar
+    // connect to activate and deactivate toolbar
     connect( m_serverManager->groupsList(), SIGNAL( itemSelectionChanged() ), this, SLOT( activateToolbar() ) );
+    connect ( m_serverManager, SIGNAL( emptyServerList() ), this, SLOT( deactivateToolbar() ) );
 
     // create dialogs
     createAddServerGroupDialog();
+    createRemoveServerGroupDialog();
 }
 
 void MainWindow::activateToolbar()
@@ -87,8 +92,28 @@ void MainWindow::activateToolbar()
 void MainWindow::addServerGroupDialogOkClicked()
 {
     // add group only if text is not empty
-    if( !m_dialogServerGroupName->text().isEmpty() )
-        addServerGroup( m_dialogServerGroupName->text() );
+    QString text = m_dialogServerGroupName->text();
+    if( !text.isEmpty() )
+        addServerGroup( text );
+}
+
+void MainWindow::deactivateToolbar()
+{
+    if( m_addServerAction->isEnabled() )
+        m_addServerAction->setEnabled( false );
+
+    if( m_removeServerAction->isEnabled() )
+        m_removeServerAction->setEnabled( false );
+
+    if( m_refreshServerAction->isEnabled() )
+        m_refreshServerAction->setEnabled( false );
+}
+
+void MainWindow::removeServerGroupDialogOkClicked()
+{
+    QString text = m_removeServerGroupName->currentText();
+    if( !text.isEmpty() )
+        removeServerGroup( text );
 }
 
 void MainWindow::showAddServerGroupDialog()
@@ -97,6 +122,12 @@ void MainWindow::showAddServerGroupDialog()
         m_dialogServerGroupName->clear();       // clear old text
 
     m_addServerGroupDialog->show();
+}
+
+void MainWindow::showRemoveServerGroupDialog()
+{
+    updateRemoveServerGroupName();
+    m_removeServerGroupDialog->show();
 }
 
 void MainWindow::addServerGroup( const QString& name )
@@ -121,6 +152,33 @@ void MainWindow::createAddServerGroupDialog()
     connect( m_addServerGroupDialog, SIGNAL( okClicked() ), this, SLOT( addServerGroupDialogOkClicked() ) );
 }
 
+void MainWindow::createRemoveServerGroupDialog()
+{
+    m_removeServerGroupDialog = new KDialog( this );
+    m_removeServerGroupName = new KComboBox( false, this ); // don't need the combobox to be editable
+
+    // populate combobox
+    for( int i = 0; i < m_serverManager->serverGroups(); i++ )
+        m_removeServerGroupName->insertItem( i, KIcon( "network-server" ), m_serverManager->serverGroupName( i ) );
+
+    QWidget *auxWidget = new QWidget();
+    QHBoxLayout *lay = new QHBoxLayout();
+
+    lay->addWidget( new QLabel( i18n( "Delete group: " ) ) );
+    lay->addWidget( m_removeServerGroupName );
+    auxWidget->setLayout( lay );
+
+    m_removeServerGroupDialog->setMainWidget( auxWidget );
+
+    connect( m_removeServerGroupDialog, SIGNAL( okClicked() ), this, SLOT( removeServerGroupDialogOkClicked() ) );
+}
+
+void MainWindow::removeServerGroup( const QString& name )
+{
+    m_serverManager->removeServerGroup( name );
+}
+
+
 void MainWindow::setupMenu()
 {
     KMenuBar *menuBar = new KMenuBar( this );
@@ -130,8 +188,8 @@ void MainWindow::setupMenu()
         "urtcontroller",                        // The program name used internally.
         0,                                      // The message catalog name. If null, program name is used instead.
         ki18n( "urtcontroller" ),               // A displayable program name string.
-        "1.0",                                  // The program version string.
-        ki18n( "Control multiple Urban Terror servers" ),
+        "1.0beta",                              // The program version string.
+        ki18n( "Control and administrate multiple Urban Terror servers" ),
         KAboutData::License_GPL_V3,             // The license this code is released under
         ki18n("(c) 2010"),                      // Copyright Statement
         ki18n( "" ),                            // Optional text shown in the About box.Can contain any information desired.
@@ -162,6 +220,7 @@ void MainWindow::setupMenu()
 
     // connect actions
     connect( m_addServerGroupAction, SIGNAL( triggered() ), this, SLOT( showAddServerGroupDialog() ) );
+    connect( m_removeServerGroupAction, SIGNAL( triggered() ), this, SLOT( showRemoveServerGroupDialog() ) );
     connect( m_quitAction, SIGNAL( triggered() ), m_app, SLOT( quit() ) );
 
     // file menu setup
@@ -185,4 +244,15 @@ void MainWindow::setupMenu()
 
     setMenuBar( menuBar );
 }
+
+void MainWindow::updateRemoveServerGroupName()
+{
+    if( m_removeServerGroupName->count() != 0 )
+        m_removeServerGroupName->clear();
+
+    // populate
+    for( int i = 0; i < m_serverManager->serverGroups(); i++ )
+        m_removeServerGroupName->insertItem( i, KIcon( "network-server" ), m_serverManager->serverGroupName( i ) );
+}
+
 

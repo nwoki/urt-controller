@@ -28,6 +28,7 @@
 class KAboutData;
 class KAction;
 class KApplication;
+class KComboBox;
 class KDialog;
 class KLineEdit;
 class KSystemTrayIcon;
@@ -44,14 +45,20 @@ public:
     MainWindow( KApplication *app, QWidget *parent = 0 );
 
 public slots:
-    void activateToolbar();             // activate toolbar when user selects a server group from the list
-    void addServerGroupDialogOkClicked();
+    void activateToolbar();                         // activate toolbar when user selects a server group from the list
+    void addServerGroupDialogOkClicked();           // activated on ok when adding server group
+    void deactivateToolbar();                       // deactivate toolbar when grouplist is empty
+    void removeServerGroupDialogOkClicked();        // activated on ok when deleting a server group
     void showAddServerGroupDialog();
+    void showRemoveServerGroupDialog();
 
 private:
-    void addServerGroup( const QString &name );
-    void createAddServerGroupDialog();  // creates the add server group dialog
-    void setupMenu();                   // setup mainwindow menu and dock
+    void addServerGroup( const QString &name );     // adds server group to m_serverManager
+    void createAddServerGroupDialog();              // creates the add server group dialog
+    void createRemoveServerGroupDialog();           // creats the delete server group dialog
+    void removeServerGroup( const QString &name );  // removes servergroup from m_serverManager
+    void setupMenu();                               // setup mainwindow menu and dock
+    void updateRemoveServerGroupName();             // updates the combobox with the names of the current servergroups available
 
     KAction *m_quitAction               // quit program
     , *m_addServerAction                // add new server
@@ -66,9 +73,13 @@ private:
     KAboutData *m_about;                // program about data
     KSystemTrayIcon *m_trayIcon;        // program tray icon
     ServerManager *m_serverManager;     // server manager class. Main class of the program
-    KDialog *m_addServerGroupDialog;    // dialog presented when user wats to ad a server group
+    KDialog *m_addServerGroupDialog     // dialog presented when user wats to ad a server group
+    , *m_removeServerGroupDialog;       // dialog presented when user wants to delete a server group
+    //add server
+    //remove server
 
     KLineEdit *m_dialogServerGroupName; // string that saves the name when adding new server group
+    KComboBox *m_removeServerGroupName; // combo box with names of servergroups to remove
 //     , m_dialogServerAddress;
 };
 

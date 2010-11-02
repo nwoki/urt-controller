@@ -36,12 +36,19 @@ class ServerGroup;
 
 class ServerManager : public QWidget
 {
+    Q_OBJECT
 public:
     ServerManager( QWidget *parent = 0 );
 
     void addNewServerGroup( const QString &name );
     QDockWidget *dockWidget() const;
     KListWidget *groupsList() const;
+    void removeServerGroup( const QString &name );
+    QString serverGroupName( int index );           // returns name of servergroup at index
+    int serverGroups() const;                       // returns number of servergroups in vector
+
+signals:
+    void emptyServerList();
 
 private:
     void refreshGroups();                       // refresh groups list
