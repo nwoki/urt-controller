@@ -1,1 +1,9 @@
 Readme file for project
+
+to compile and run:
+
+1 - cd to directory
+2 - mkdir build && cd build
+3 - make
+4 - make install
+5 - ./urbancontroller

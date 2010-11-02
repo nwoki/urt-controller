@@ -1,4 +1,5 @@
 #include "mainwindow.h"
+#include "servermanager.h"
 
 #include <KAboutData>
 #include <KAction>
@@ -21,13 +22,18 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     , m_app( app )
     , m_about( 0 )
     , m_trayIcon( 0 )
+    , m_serverManager( 0 )
 {
     setWindowIcon( KIcon( "urtcontroller" ) );
-    setFixedSize( 600, 400 );
+    setMinimumSize( 600, 600 );
     setupMenu();
 
     m_trayIcon = new KSystemTrayIcon( KIcon( "urtcontroller" ), this );
     m_trayIcon->setVisible( true );             // Show immediatly, on by default
+
+    m_serverManager = new ServerManager();
+    addDockWidget( Qt::LeftDockWidgetArea, m_serverManager->dockWidget() );
+    setCentralWidget( m_serverManager );
 }
 
 
