@@ -16,6 +16,7 @@ ServerManager::ServerManager( QWidget *parent )
     , m_listDock( 0 )
 {
     setupGui();
+
 }
 
 QDockWidget* ServerManager::dockWidget() const

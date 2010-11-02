@@ -89,7 +89,7 @@ void MainWindow::setupMenu()
     // menu bar
     menuBar->addMenu( fileMenu );
     menuBar->addMenu( editMenu );
-    menuBar->addMenu( helpMenu->menu());
+    menuBar->addMenu( helpMenu->menu() );
 
 
     setMenuBar( menuBar );

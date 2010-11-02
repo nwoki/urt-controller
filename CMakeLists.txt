@@ -11,6 +11,7 @@ set(urtcontroller_SRCS
     src/mainwindow.cpp
     src/server.cpp
     src/servermanager.cpp
+    src/servergroup.cpp
 )
 
 kde4_add_executable( urtcontroller ${urtcontroller_SRCS} )
