@@ -38,13 +38,13 @@ class Server : public QObject
 public:
     Server( const QString &address );       // only need address of server. All other info is set upon connect or refresh
 
-    QString name() const;                   // get server name
     QString address() const;                // get server address
+    QString name() const;                   // get server name
     int port() const;                       // get server port
     QString rcon() const;                   // get server rcon
 
-    void setName( QString name );           // set server name
     void setAddress( QString address );     // set server address
+    void setName( QString name );           // set server name
     void setPort( int port );               // set server port
     void setRcon( QString rcon );           // set server rcon password
 
@@ -55,8 +55,11 @@ public slots:
 private:
     QString addressLookup( const QString &address );    // looks up address and returns ip if given a dns
 
-    QString m_name          // server name
-    , m_address             // server address
+    QString m_address       // server address
+    , m_currPlayers         // current number of players on server
+    , m_map                 // current map being played on server
+    , m_maxPlayers          // max players allowed on server
+    , m_name                // server name
     , m_rcon;               // server rcon password
     int m_port;             // server port
     QUdpSocket *m_socket;   // server socket

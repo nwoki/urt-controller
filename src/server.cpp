@@ -37,10 +37,14 @@
 
 Server::Server( const QString &address )
     : QObject( 0 )
-    , m_name( QString() )
     , m_address( QString() )
+    , m_currPlayers( QString() )
+    , m_map( QString() )
+    , m_maxPlayers( QString() )
+    , m_name( QString() )
     , m_rcon( QString() )
     , m_port( 27960 )
+    , m_socket( 0 )
 {
     if( !address.contains( "." ) )
         KMessageBox::error( 0, i18n( "Invalid address" ) );
@@ -74,17 +78,19 @@ Server::Server( const QString &address )
         // socket signals setup
         connect( m_socket, SIGNAL( readyRead() ), this, SLOT( parseRecievedData() ) );
         connect( m_socket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( handleSocketError( QAbstractSocket::SocketError ) ) );
-    }
-}
 
-QString Server::name() const
-{
-    return m_name;
+        m_socket->write("\xff\xff\xff\xff\x02getinfo");
+    }
 }
 
 QString Server::address() const
 {
     return m_address;
+}
+
+QString Server::name() const
+{
+    return m_name;
 }
 
 int Server::port() const
@@ -97,14 +103,14 @@ QString Server::rcon() const
     return m_rcon;
 }
 
-void Server::setName( QString name )
-{
-    m_name = name;
-}
-
 void Server::setAddress( QString address )
 {
     m_address = address;
+}
+
+void Server::setName( QString name )
+{
+    m_name = name;
 }
 
 void Server::setPort( int port )
