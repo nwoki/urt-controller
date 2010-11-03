@@ -35,6 +35,7 @@
 #include <KSystemTrayIcon>
 #include <KToolBar>
 
+#include <QDebug>
 #include <QHBoxLayout>
 #include <QLabel>
 
@@ -53,7 +54,9 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     , m_serverManager( 0 )
     , m_addServerGroupDialog( 0 )
     , m_removeServerGroupDialog( 0 )
+    , m_addServerDialog( 0 )
     , m_dialogServerGroupName( 0 )
+    , m_dialogAddServerAddress( 0 )
     , m_removeServerGroupName( 0 )
 {
     setWindowIcon( KIcon( "urtcontroller" ) );
@@ -75,6 +78,7 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     // create dialogs
     createAddServerGroupDialog();
     createRemoveServerGroupDialog();
+    createAddServerDialog();
 }
 
 void MainWindow::activateToolbar()
@@ -89,12 +93,19 @@ void MainWindow::activateToolbar()
         m_refreshServerAction->setEnabled( true );
 }
 
+void MainWindow::addServerDialogOkClicked()
+{
+    QString text = m_dialogAddServerAddress->text();
+    if( !text.isEmpty() )
+        m_serverManager->addNewServer( m_serverManager->currentGroupName(), text );
+}
+
 void MainWindow::addServerGroupDialogOkClicked()
 {
     // add group only if text is not empty
-    QString text = m_dialogServerGroupName->text();
-    if( !text.isEmpty() )
-        addServerGroup( text );
+    QString groupName = m_dialogServerGroupName->text();
+    if( !groupName.isEmpty() )
+        m_serverManager->addNewServerGroup( groupName );
 }
 
 void MainWindow::deactivateToolbar()
@@ -111,9 +122,17 @@ void MainWindow::deactivateToolbar()
 
 void MainWindow::removeServerGroupDialogOkClicked()
 {
-    QString text = m_removeServerGroupName->currentText();
-    if( !text.isEmpty() )
-        removeServerGroup( text );
+    QString groupName = m_removeServerGroupName->currentText();
+    if( !groupName.isEmpty() )
+        m_serverManager->removeServerGroup( groupName );
+}
+
+void MainWindow::showAddServerDialog()
+{
+    if( !m_dialogAddServerAddress->text().isEmpty() )
+        m_dialogAddServerAddress->clear();      // clear old text
+
+    m_addServerDialog->show();
 }
 
 void MainWindow::showAddServerGroupDialog()
@@ -130,9 +149,21 @@ void MainWindow::showRemoveServerGroupDialog()
     m_removeServerGroupDialog->show();
 }
 
-void MainWindow::addServerGroup( const QString& name )
+void MainWindow::createAddServerDialog()
 {
-    m_serverManager->addNewServerGroup( name );
+    m_addServerDialog = new KDialog( this );
+    m_dialogAddServerAddress = new KLineEdit( this );
+
+    QWidget *auxWidget = new QWidget();
+    QHBoxLayout *lay = new QHBoxLayout();
+
+    lay->addWidget( new QLabel( i18n( "Server Address: " ) ) );
+    lay->addWidget( m_dialogAddServerAddress );
+    auxWidget->setLayout( lay );
+
+    m_addServerDialog->setMainWidget( auxWidget );
+
+    connect( m_addServerDialog, SIGNAL( okClicked() ), this, SLOT( addServerDialogOkClicked() ) );
 }
 
 void MainWindow::createAddServerGroupDialog()
@@ -172,12 +203,6 @@ void MainWindow::createRemoveServerGroupDialog()
 
     connect( m_removeServerGroupDialog, SIGNAL( okClicked() ), this, SLOT( removeServerGroupDialogOkClicked() ) );
 }
-
-void MainWindow::removeServerGroup( const QString& name )
-{
-    m_serverManager->removeServerGroup( name );
-}
-
 
 void MainWindow::setupMenu()
 {
@@ -222,6 +247,9 @@ void MainWindow::setupMenu()
     connect( m_addServerGroupAction, SIGNAL( triggered() ), this, SLOT( showAddServerGroupDialog() ) );
     connect( m_removeServerGroupAction, SIGNAL( triggered() ), this, SLOT( showRemoveServerGroupDialog() ) );
     connect( m_quitAction, SIGNAL( triggered() ), m_app, SLOT( quit() ) );
+
+    // toolbar
+    connect( m_addServerAction, SIGNAL( triggered() ), this, SLOT( showAddServerDialog() ) );
 
     // file menu setup
     fileMenu->addAction( m_addServerGroupAction );

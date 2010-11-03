@@ -40,15 +40,17 @@ class ServerManager : public QWidget
 public:
     ServerManager( QWidget *parent = 0 );
 
-    void addNewServerGroup( const QString &name );
-    QDockWidget *dockWidget() const;
-    KListWidget *groupsList() const;
-    void removeServerGroup( const QString &name );
-    QString serverGroupName( int index );           // returns name of servergroup at index
-    int serverGroups() const;                       // returns number of servergroups in vector
+    void addNewServer( const QString &group, const QString &serverAddress );    // adds new server to server group
+    void addNewServerGroup( const QString &name );                              // adds new server group
+    QString currentGroupName() const;                                           // returns name of current group
+    QDockWidget *dockWidget() const;                                            // returns serverManager dock widget ( servergroup list )
+    KListWidget *groupsList() const;                                            // returns grouplist widget
+    void removeServerGroup( const QString &name );                              // removes server group
+    QString serverGroupName( int index );                                       // returns name of servergroup at index
+    int serverGroups() const;                                                   // returns number of servergroups in vector
 
 signals:
-    void emptyServerList();
+    void emptyServerList();                     // signal emitted when server list is empty
 
 private:
     void refreshGroups();                       // refresh groups list

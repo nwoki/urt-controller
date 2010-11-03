@@ -35,9 +35,7 @@ class ServerGroup
 public:
     ServerGroup( const QString &name );
 
-    void addServer( Server *server );
-    void addServer( const QString &name, const QString &address, const QString &rcon, int port );
-
+    void addServer( const QString &serverAddress );
     QString groupName() const;
 
 private:

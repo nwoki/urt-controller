@@ -23,6 +23,8 @@
 
 #include <KListWidget>
 #include <KLocalizedString>
+#include <KMessageBox>
+#include <QDebug>
 #include <QDockWidget>
 #include <QTableWidget>
 #include <QHBoxLayout>
@@ -39,11 +41,33 @@ ServerManager::ServerManager( QWidget *parent )
     setupGui();
 }
 
+void ServerManager::addNewServer( const QString& group, const QString& serverAddress )
+{
+    ServerGroup *auxGroup = 0;
+
+    for( int i = 0; i < m_serverGroups.count(); i++ ) {
+        if( m_serverGroups.at( i )->groupName() == group )
+            auxGroup = m_serverGroups.at( i );
+    }
+
+    if( !auxGroup ) {
+        qWarning() << "ServerManager::addNewServer ERROR: can't find servergroup: " << group;
+        KMessageBox::sorry( this, "Can't find selected server group" );
+    }
+    else
+        auxGroup->addServer( serverAddress );
+}
+
 void ServerManager::addNewServerGroup( const QString& name )
 {
     ServerGroup *auxServerGroup = new ServerGroup( name );
     m_serverGroups.push_back( auxServerGroup );
     refreshGroups();
+}
+
+QString ServerManager::currentGroupName() const
+{
+    return groupsList()->currentItem()->text();
 }
 
 QDockWidget* ServerManager::dockWidget() const

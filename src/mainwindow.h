@@ -46,17 +46,19 @@ public:
 
 public slots:
     void activateToolbar();                         // activate toolbar when user selects a server group from the list
+    void addServerDialogOkClicked();                // activated on ok click whan adding a server
     void addServerGroupDialogOkClicked();           // activated on ok when adding server group
     void deactivateToolbar();                       // deactivate toolbar when grouplist is empty
     void removeServerGroupDialogOkClicked();        // activated on ok when deleting a server group
+    void showAddServerDialog();
     void showAddServerGroupDialog();
     void showRemoveServerGroupDialog();
 
 private:
-    void addServerGroup( const QString &name );     // adds server group to m_serverManager
+    void createAddServerDialog();                   // creates the dialog for adding a server to servergroup
     void createAddServerGroupDialog();              // creates the add server group dialog
+//     void createRemoveServerDialog( const QString &groupName, const QString &serverName or address? );                // creats a dialog for removing a server from servergroup
     void createRemoveServerGroupDialog();           // creats the delete server group dialog
-    void removeServerGroup( const QString &name );  // removes servergroup from m_serverManager
     void setupMenu();                               // setup mainwindow menu and dock
     void updateRemoveServerGroupName();             // updates the combobox with the names of the current servergroups available
 
@@ -74,11 +76,12 @@ private:
     KSystemTrayIcon *m_trayIcon;        // program tray icon
     ServerManager *m_serverManager;     // server manager class. Main class of the program
     KDialog *m_addServerGroupDialog     // dialog presented when user wats to ad a server group
-    , *m_removeServerGroupDialog;       // dialog presented when user wants to delete a server group
-    //add server
+    , *m_removeServerGroupDialog        // dialog presented when user wants to delete a server group
+    , *m_addServerDialog;               // dialog presented when user wants to add a server to a server group
     //remove server
 
-    KLineEdit *m_dialogServerGroupName; // string that saves the name when adding new server group
+    KLineEdit *m_dialogServerGroupName  // lineEdit that saves the name when adding new server group
+    , *m_dialogAddServerAddress;         // lineEdit that saves server address when adding a new server to server group
     KComboBox *m_removeServerGroupName; // combo box with names of servergroups to remove
 //     , m_dialogServerAddress;
 };
