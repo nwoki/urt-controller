@@ -39,12 +39,14 @@ Server::Server( const QString &address )
     : QObject( 0 )
     , m_address( QString() )
     , m_currPlayers( QString() )
+    , m_gametype( QString() )
     , m_map( QString() )
     , m_maxPlayers( QString() )
     , m_name( QString() )
     , m_rcon( QString() )
     , m_port( 27960 )
     , m_socket( 0 )
+    , m_getInfoFlag( false )
 {
     if( !address.contains( "." ) )
         KMessageBox::error( 0, i18n( "Invalid address" ) );
@@ -79,13 +81,34 @@ Server::Server( const QString &address )
         connect( m_socket, SIGNAL( readyRead() ), this, SLOT( parseRecievedData() ) );
         connect( m_socket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( handleSocketError( QAbstractSocket::SocketError ) ) );
 
-        m_socket->write("\xff\xff\xff\xff\x02getinfo");
+        // update server info
+        refreshServerInfo();
     }
 }
 
 QString Server::address() const
 {
     return m_address;
+}
+
+QString Server::currentPlayers() const
+{
+    return m_currPlayers;
+}
+
+QString Server::gametype() const
+{
+    return m_gametype;
+}
+
+QString Server::map() const
+{
+    return m_map;
+}
+
+QString Server::maxPlayers() const
+{
+    return m_maxPlayers;
 }
 
 QString Server::name() const
@@ -103,6 +126,14 @@ QString Server::rcon() const
     return m_rcon;
 }
 
+void Server::refreshServerInfo()
+{
+    getInfo();
+    /*
+     * the other info commands will go here
+     */
+}
+/*
 void Server::setAddress( QString address )
 {
     m_address = address;
@@ -116,7 +147,7 @@ void Server::setName( QString name )
 void Server::setPort( int port )
 {
     m_port = port;
-}
+}*/
 
 void Server::setRcon( QString rcon )
 {
@@ -131,10 +162,14 @@ void Server::handleSocketError( QAbstractSocket::SocketError )
 
 void Server::parseRecievedData()
 {
+//     QByteArray recievedMsg;
     while( m_socket->hasPendingDatagrams() ) {
         if( m_socket->pendingDatagramSize() == -1 )
             qDebug( "no data to read" );
-        qDebug() << m_socket->readAll();
+        else {
+            if( m_getInfoFlag )
+                parseGetInfoCommand( m_socket->readAll() );
+        }
     }
 }
 
@@ -147,5 +182,38 @@ QString Server::addressLookup( const QString& address )
     else
         return QString();
 }
+
+void Server::getInfo()
+{
+    m_getInfoFlag = true;       // set corrispinding flag to true
+    if( m_socket->isValid() )
+        m_socket->write( "\xff\xff\xff\xffgetinfo" );
+}
+
+void Server::parseGetInfoCommand( QByteArray msg )
+{
+//     ÿÿÿÿinfoResponse
+//     //\game\q3ut4\maxPing\250\pure\1\gametype\4\sv_maxclients\14\clients\3\mapname\ut4_turnpike\hostname\^22s2h ^7return ^1ITA #1\protocol\68
+    QList<QByteArray> list = msg.split( '\\' );
+    for( int i = 0; i < list.size(); i++ ) {
+        qDebug() << "i=" << i << " -> " << list.at( i );
+        QByteArray aux = list.at( i );
+
+        if( aux == "gametype" )
+            m_gametype = list.at( i+1 );
+        else if( aux == "sv_maxclients" )
+            m_maxPlayers = list.at( i+1 );
+        else if( aux == "clients" )
+            m_currPlayers = list.at( i+1 );
+        else if( aux == "mapname" )
+            m_map = list.at( i+1 );
+        else if( aux == "hostname" )
+            m_name = list.at( i+1 );
+    }
+//     qDebug() << "MY INFO IS: " << m_gametype << "|" << m_maxPlayers << "|" << m_currPlayers << "|" << m_map << "|" << m_name;
+    m_getInfoFlag = false;  // set back to false
+}
+
+
 
 
