@@ -192,11 +192,8 @@ void Server::getInfo()
 
 void Server::parseGetInfoCommand( QByteArray msg )
 {
-//     ÿÿÿÿinfoResponse
-//     //\game\q3ut4\maxPing\250\pure\1\gametype\4\sv_maxclients\14\clients\3\mapname\ut4_turnpike\hostname\^22s2h ^7return ^1ITA #1\protocol\68
     QList<QByteArray> list = msg.split( '\\' );
     for( int i = 0; i < list.size(); i++ ) {
-        qDebug() << "i=" << i << " -> " << list.at( i );
         QByteArray aux = list.at( i );
 
         if( aux == "gametype" )

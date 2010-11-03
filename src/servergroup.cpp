@@ -42,5 +42,20 @@ QString ServerGroup::groupName() const
     return m_groupName;
 }
 
+Server* ServerGroup::server( int index )
+{
+    if( index > m_servers.count() )     // range check
+        return new Server( QString() );
+    else
+        return m_servers.at( index );
+}
+
+int ServerGroup::servers() const
+{
+    return m_servers.count();
+}
+
+
+
 
 

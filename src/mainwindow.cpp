@@ -38,6 +38,7 @@
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QTimer>
 
 MainWindow::MainWindow( KApplication *app, QWidget *parent )
     : KMainWindow( parent )
@@ -73,7 +74,7 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
 
     // connect to activate and deactivate toolbar
     connect( m_serverManager->groupsList(), SIGNAL( itemSelectionChanged() ), this, SLOT( activateToolbar() ) );
-    connect ( m_serverManager, SIGNAL( emptyServerList() ), this, SLOT( deactivateToolbar() ) );
+    connect( m_serverManager, SIGNAL( emptyServerList() ), this, SLOT( deactivateToolbar() ) );
 
     // create dialogs
     createAddServerGroupDialog();
@@ -96,8 +97,10 @@ void MainWindow::activateToolbar()
 void MainWindow::addServerDialogOkClicked()
 {
     QString text = m_dialogAddServerAddress->text();
-    if( !text.isEmpty() )
+    if( !text.isEmpty() ) {
         m_serverManager->addNewServer( m_serverManager->currentGroupName(), text );
+        QTimer::singleShot( 1000, this, SLOT( refreshTables() ) );
+    }
 }
 
 void MainWindow::addServerGroupDialogOkClicked()
@@ -118,6 +121,11 @@ void MainWindow::deactivateToolbar()
 
     if( m_refreshServerAction->isEnabled() )
         m_refreshServerAction->setEnabled( false );
+}
+
+void MainWindow::refreshTables()
+{
+    m_serverManager->refreshGUI();
 }
 
 void MainWindow::removeServerGroupDialogOkClicked()
@@ -250,6 +258,7 @@ void MainWindow::setupMenu()
 
     // toolbar
     connect( m_addServerAction, SIGNAL( triggered() ), this, SLOT( showAddServerDialog() ) );
+    connect( m_refreshServerAction, SIGNAL( triggered() ), this, SLOT( refreshTables() ) );
 
     // file menu setup
     fileMenu->addAction( m_addServerGroupAction );

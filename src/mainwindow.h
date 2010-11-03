@@ -49,6 +49,7 @@ public slots:
     void addServerDialogOkClicked();                // activated on ok click whan adding a server
     void addServerGroupDialogOkClicked();           // activated on ok when adding server group
     void deactivateToolbar();                       // deactivate toolbar when grouplist is empty
+    void refreshTables();                           // refresh servermanagers tables
     void removeServerGroupDialogOkClicked();        // activated on ok when deleting a server group
     void showAddServerDialog();
     void showAddServerGroupDialog();

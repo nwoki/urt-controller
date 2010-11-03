@@ -45,23 +45,25 @@ public:
     QString currentGroupName() const;                                           // returns name of current group
     QDockWidget *dockWidget() const;                                            // returns serverManager dock widget ( servergroup list )
     KListWidget *groupsList() const;                                            // returns grouplist widget
+    void refreshGUI();                                                          // refresh all gui for current server group
     void removeServerGroup( const QString &name );                              // removes server group
     QString serverGroupName( int index );                                       // returns name of servergroup at index
     int serverGroups() const;                                                   // returns number of servergroups in vector
 
 signals:
-    void emptyServerList();                     // signal emitted when server list is empty
+    void emptyServerList();                                 // signal emitted when server list is empty
 
 private:
-    void refreshGroups();                       // refresh groups list
-    void setupGui();                            // setup gui layout
+    void refreshGroups();                                   // refresh groups list
+    void refreshServersTable( ServerGroup* serverGroup );   // refresh serversTable with server of given group
+    void setupGui();                                        // setup gui layout
 
-    KListWidget *m_serverGroupsList;            // list widget with user's server groups
-    QTableWidget *m_serversTable                // table with servergroups servers
-    , *m_playersTable                           // table showing info on players in a server
-    , *m_serverInfoTable;                       // table with server info
-    QDockWidget *m_listDock;                    // dock used to contain listwidget and set to mainwindow
-    QVector< ServerGroup* > m_serverGroups;     // vector with server groups
+    KListWidget *m_serverGroupsList;                        // list widget with user's server groups
+    QTableWidget *m_serversTable                            // table with servergroups servers
+    , *m_playersTable                                       // table showing info on players in a server
+    , *m_serverInfoTable;                                   // table with server info
+    QDockWidget *m_listDock;                                // dock used to contain listwidget and set to mainwindow
+    QVector< ServerGroup* > m_serverGroups;                 // vector with server groups
 };
 
 #endif

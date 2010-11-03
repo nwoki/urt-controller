@@ -35,8 +35,10 @@ class ServerGroup
 public:
     ServerGroup( const QString &name );
 
-    void addServer( const QString &serverAddress );
-    QString groupName() const;
+    void addServer( const QString &serverAddress );     // adds a server to the group
+    QString groupName() const;                          // returns group name
+    Server* server( int index );                        // returns pointer to specified server at index
+    int servers() const;                                // returns number of servers contain by servergroup
 
 private:
     QString m_groupName;
