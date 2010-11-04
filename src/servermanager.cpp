@@ -44,6 +44,9 @@ ServerManager::ServerManager( QWidget *parent )
 {
     setupGui();     // first create gui
     loadConfig();   // then add items and stuff from config
+
+    // connect a refresh when i click on a different server group
+    connect( m_serverGroupsList, SIGNAL( currentTextChanged( QString ) ), this, SLOT( refreshServersTableViaListClick( QString ) ) );
 }
 
 void ServerManager::addNewServer( const QString& group, const QString& serverAddress )
@@ -83,19 +86,18 @@ QDockWidget* ServerManager::dockWidget() const
 
 void ServerManager::refreshGUI()
 {
-    bool found = false;
-    int i = 0;
-    ServerGroup *auxServerGroup = 0;
+    ServerGroup *auxServerGroup = serverGroupViaName( currentGroupName() );
 
-    while( i < serverGroups() && !found ) {
-        if( m_serverGroups.at( i )->groupName() == currentGroupName() ) {
-            auxServerGroup = m_serverGroups.at( i );
-            found = true;
-        }
-        i++;
-    }
+    if( auxServerGroup != 0 )
+        refreshServersTable( auxServerGroup );
+}
 
-    refreshServersTable( auxServerGroup );
+void ServerManager::refreshServersTableViaListClick( QString groupName )
+{
+    ServerGroup* auxServerGroup = serverGroupViaName( groupName );
+
+    if( auxServerGroup != 0 )
+        refreshServersTable( auxServerGroup );
 }
 
 void ServerManager::addServerGroupToConfig( const QString& name )
@@ -182,17 +184,14 @@ void ServerManager::removeServerGroup( const QString& name )
 {
     ServerGroup *auxServerGroup;
     bool found = false;
-    int i = 0;
 
-    while( i < m_serverGroups.count() && !found ) {
+    for( int i = 0; i < m_serverGroups.count() && !found; i++ ) {
         if( m_serverGroups.at( i )->groupName() == name ) {
             auxServerGroup = m_serverGroups.at( i );
             m_serverGroups.remove( i );
             delete auxServerGroup;
             found = true;
         }
-        else
-            i++;
     }
     refreshGroups();    // to update list
     removeServerGroupFromConfig( name );
@@ -230,6 +229,17 @@ void ServerManager::removeServerGroupFromConfig( const QString& name )
     // delete server group
     serverGroups.deleteGroup( name );
     config.sync();
+}
+
+ServerGroup* ServerManager::serverGroupViaName( const QString& name )
+{
+    ServerGroup *auxServerGroup = 0;
+
+    for( int i = 0; i < serverGroups(); i++ ) {
+        if( m_serverGroups.at( i )->groupName() == name )
+            auxServerGroup = m_serverGroups.at( i );
+    }
+    return auxServerGroup;
 }
 
 void ServerManager::setupGui()

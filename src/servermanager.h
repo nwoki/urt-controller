@@ -50,6 +50,9 @@ public:
     QString serverGroupName( int index );                                       // returns name of servergroup at index
     int serverGroups() const;                                                   // returns number of servergroups in vector
 
+public slots:
+    void refreshServersTableViaListClick( QString groupName );                  // slot used when servergroup is clicked on KlistWidget
+
 signals:
     void emptyServerList();                                 // signal emitted when server list is empty
 
@@ -59,6 +62,7 @@ private:
     void refreshGroups();                                   // refresh groups list
     void refreshServersTable( ServerGroup* serverGroup );   // refresh serversTable with server of given group
     void removeServerGroupFromConfig( const QString &name );// removes server group and related servers from config
+    ServerGroup* serverGroupViaName( const QString &name ); // returns a pointer to a servergroup with given name
     void setupGui();                                        // setup gui layout
 
     KListWidget *m_serverGroupsList;                        // list widget with user's server groups
