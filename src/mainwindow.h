@@ -56,6 +56,7 @@ public slots:
     void showRemoveServerGroupDialog();
 
 private:
+    void checkForConfig();                          // checks for config file. If on first run, creates it
     void createAddServerDialog();                   // creates the dialog for adding a server to servergroup
     void createAddServerGroupDialog();              // creates the add server group dialog
 //     void createRemoveServerDialog( const QString &groupName, const QString &serverName or address? );                // creats a dialog for removing a server from servergroup

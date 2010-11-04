@@ -54,8 +54,11 @@ signals:
     void emptyServerList();                                 // signal emitted when server list is empty
 
 private:
+    void addServerGroupToConfig( const QString &name );     // adds the new server group to app config file
+    void loadConfig();                                      // load info stored in config file
     void refreshGroups();                                   // refresh groups list
     void refreshServersTable( ServerGroup* serverGroup );   // refresh serversTable with server of given group
+    void removeServerGroupFromConfig( const QString &name );// removes server group and related servers from config
     void setupGui();                                        // setup gui layout
 
     KListWidget *m_serverGroupsList;                        // list widget with user's server groups

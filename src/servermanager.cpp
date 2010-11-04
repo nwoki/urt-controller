@@ -21,9 +21,12 @@
 #include "servergroup.h"
 #include "servermanager.h"
 
+#include <KConfig>
+#include <KConfigGroup>
 #include <KListWidget>
 #include <KLocalizedString>
 #include <KMessageBox>
+
 #include <QDebug>
 #include <QDockWidget>
 #include <QTableWidget>
@@ -39,7 +42,8 @@ ServerManager::ServerManager( QWidget *parent )
     , m_serverInfoTable( 0 )
     , m_listDock( 0 )
 {
-    setupGui();
+    setupGui();     // first create gui
+    loadConfig();   // then add items and stuff from config
 }
 
 void ServerManager::addNewServer( const QString& group, const QString& serverAddress )
@@ -64,6 +68,7 @@ void ServerManager::addNewServerGroup( const QString& name )
     ServerGroup *auxServerGroup = new ServerGroup( name );
     m_serverGroups.push_back( auxServerGroup );
     refreshGroups();
+    addServerGroupToConfig( name );
 }
 
 QString ServerManager::currentGroupName() const
@@ -93,6 +98,26 @@ void ServerManager::refreshGUI()
     refreshServersTable( auxServerGroup );
 }
 
+void ServerManager::addServerGroupToConfig( const QString& name )
+{
+    KConfig config;
+    KConfigGroup serverGroups = config.group( "ServerGroups" );
+    KConfigGroup newGroup = serverGroups.group( name );
+    newGroup.writeEntry( "name", name );
+    newGroup.writeEntry( "servers", name + "-servers" );
+    config.sync();
+}
+
+void ServerManager::loadConfig()
+{
+    KConfig config;
+    KConfigGroup groups = config.group( "ServerGroups" );
+    QStringList groupNames = groups.groupList();
+
+    for( int i = 0; i < groupNames.size(); i++ )
+        addNewServerGroup( groupNames.at( i ) );
+}
+
 void ServerManager::refreshGroups()
 {
     if( m_serverGroupsList->count() < m_serverGroups.count() ) {        // update list ADD
@@ -101,14 +126,12 @@ void ServerManager::refreshGroups()
     }
     else if( m_serverGroupsList->count() > m_serverGroups.count() ) {   // elimate from list REMOVE
         for( int i = 0; i < m_serverGroupsList->count(); i++ ) {
-
             QListWidgetItem *auxItem = m_serverGroupsList->item( i );
             ServerGroup *auxServerGroup;
 
-            int j = 0;
             bool found = false;
 
-            while( j < m_serverGroups.count() && !found ) {
+            for( int j = 0; j < m_serverGroups.count() && !found; j++ ) {
                 auxServerGroup = m_serverGroups.at( j );
                 if( auxItem->text() == auxServerGroup->groupName() )
                     found = true;
@@ -134,9 +157,9 @@ void ServerManager::refreshServersTable( ServerGroup* serverGroup )
 
         // create item for table widget
         QTableWidgetItem *nameItem = new QTableWidgetItem( KIcon( "urtcontroller" ), auxServer->name() );
-        nameItem->setTextAlignment( Qt::AlignHCenter );
+        nameItem->setTextAlignment( Qt::AlignLeft );
         QTableWidgetItem *addrItem = new QTableWidgetItem( auxServer->address() );
-        addrItem->setTextAlignment( Qt::AlignHCenter );
+        addrItem->setTextAlignment( Qt::AlignLeft );
         QTableWidgetItem *pingItem = new QTableWidgetItem( "TODO" );   ///TODO ping value goes here!
         pingItem->setTextAlignment( Qt::AlignHCenter );
         QTableWidgetItem *playersItem = new QTableWidgetItem( KIcon( "im-user" ), auxServer->currentPlayers() + "/" + auxServer->maxPlayers() );
@@ -172,6 +195,7 @@ void ServerManager::removeServerGroup( const QString& name )
             i++;
     }
     refreshGroups();    // to update list
+    removeServerGroupFromConfig( name );
 }
 
 QString ServerManager::serverGroupName( int index )
@@ -192,6 +216,21 @@ KListWidget* ServerManager::groupsList() const
     return m_serverGroupsList;
 }
 
+void ServerManager::removeServerGroupFromConfig( const QString& name )
+{
+    KConfig config;
+    KConfigGroup serverGroups = config.group( "ServerGroups" );
+    KConfigGroup serverToDelete = serverGroups.group( name );
+    KConfigGroup servers = config.group( "servers" );
+    // get groupname related servers
+    QString groupServersToDelete = serverToDelete.readEntry( "servers" );
+
+    // delete servers related to group
+    servers.deleteGroup( groupServersToDelete );
+    // delete server group
+    serverGroups.deleteGroup( name );
+    config.sync();
+}
 
 void ServerManager::setupGui()
 {

@@ -25,6 +25,8 @@
 #include <KAction>
 #include <KApplication>
 #include <KComboBox>
+#include <KConfig>
+#include <KConfigGroup>
 #include <KDialog>
 #include <KHelpMenu>
 #include <KLineEdit>
@@ -60,17 +62,19 @@ MainWindow::MainWindow( KApplication *app, QWidget *parent )
     , m_dialogAddServerAddress( 0 )
     , m_removeServerGroupName( 0 )
 {
+    // first of all check for previous configuration
+    checkForConfig();
+
     setWindowIcon( KIcon( "urtcontroller" ) );
     setMinimumSize( 600, 600 );
     setupMenu();
 
     m_trayIcon = new KSystemTrayIcon( KIcon( "urtcontroller" ), this );
-    m_trayIcon->setVisible( true );             // Show immediatly, on by default
+    m_trayIcon->setVisible( true );                                         // Show immediatly, on by default
 
-    // add serverlist dock widget
     m_serverManager = new ServerManager();
-    addDockWidget( Qt::LeftDockWidgetArea, m_serverManager->dockWidget() );
-    setCentralWidget( m_serverManager );
+    addDockWidget( Qt::LeftDockWidgetArea, m_serverManager->dockWidget() ); // add serverlist dock widget
+    setCentralWidget( m_serverManager );                                    // and set main widgets
 
     // connect to activate and deactivate toolbar
     connect( m_serverManager->groupsList(), SIGNAL( itemSelectionChanged() ), this, SLOT( activateToolbar() ) );
@@ -155,6 +159,23 @@ void MainWindow::showRemoveServerGroupDialog()
 {
     updateRemoveServerGroupName();
     m_removeServerGroupDialog->show();
+}
+
+void MainWindow::checkForConfig()
+{
+    KConfig config;                                                             // check and create if neccessary, the config file
+    if( !config.hasGroup( "ServerGroups" ) ) {
+        KConfigGroup serverGroups = config.group( "ServerGroups" );             // create container group SERVERGROUPS
+        KConfigGroup defaultGroup = serverGroups.group( "DefaultGroup" );       // create group DEFAULT
+        defaultGroup.writeEntry( "name", "DefaultGroup" );                      // add attribures to group DEFAULT
+        defaultGroup.writeEntry( "servers", "DefaultGroup-Servers" );           // "  "
+    }
+//     // don't need this here
+//     if( !config.hasGroup( "Servers" ) ) {
+//         KConfigGroup servers = config.group( "Servers" );
+//         KConfigGroup serverGroups = servers.group( "DefaultGroup-Servers" );
+//     }
+    config.sync();                                                              // save
 }
 
 void MainWindow::createAddServerDialog()
