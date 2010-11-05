@@ -57,6 +57,7 @@ signals:
     void emptyServerList();                                 // signal emitted when server list is empty
 
 private:
+    void addServerToConfig( const QString &groupName, const QString &address );
     void addServerGroupToConfig( const QString &name );     // adds the new server group to app config file
     void loadConfig();                                      // load info stored in config file
     void refreshGroups();                                   // refresh groups list

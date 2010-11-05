@@ -62,8 +62,10 @@ void ServerManager::addNewServer( const QString& group, const QString& serverAdd
         qWarning() << "ServerManager::addNewServer ERROR: can't find servergroup: " << group;
         KMessageBox::sorry( this, "Can't find selected server group" );
     }
-    else
+    else {  // ADD
         auxGroup->addServer( serverAddress );
+        addServerToConfig( group, serverAddress );
+    }
 }
 
 void ServerManager::addNewServerGroup( const QString& name )
@@ -98,6 +100,21 @@ void ServerManager::refreshServersTableViaListClick( QString groupName )
 
     if( auxServerGroup != 0 )
         refreshServersTable( auxServerGroup );
+}
+
+void ServerManager::addServerToConfig( const QString& groupName, const QString &address )
+{
+    KConfig config;
+    KConfigGroup serverGroups = config.group( "ServerGroups" );
+    KConfigGroup subGroup = serverGroups.group( groupName );        // get the group to add server to
+    QString serversGroupName = subGroup.readEntry( "servers" );
+
+    KConfigGroup servers = config.group( "Servers" );
+    KConfigGroup serversGroup = servers.group( serversGroupName );
+    int id = serversGroup.groupList().count() + 1;
+    KConfigGroup newId = serversGroup.group( QString::number( id ) );
+    newId.writeEntry( "address", address );
+    config.sync();
 }
 
 void ServerManager::addServerGroupToConfig( const QString& name )
@@ -244,12 +261,11 @@ ServerGroup* ServerManager::serverGroupViaName( const QString& name )
 
 void ServerManager::setupGui()
 {
-    /// TODO check that objects aren't already created and exit from this function if so
-
     QVBoxLayout *vertLay = new QVBoxLayout();           // holds servers table and small horrlay
     QHBoxLayout *horrLay = new QHBoxLayout();           // holds playersTable and serverInfoTable
 
     m_serverGroupsList = new KListWidget();
+    m_serverGroupsList->setSortingEnabled( true );      // sort list alphabetically
 
     m_listDock = new QDockWidget( i18n( "ServerGroups" ) );
     m_listDock->setFeatures( QDockWidget::NoDockWidgetFeatures );
