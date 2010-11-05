@@ -47,6 +47,7 @@ Server::Server( const QString &address )
     , m_port( 27960 )
     , m_socket( 0 )
     , m_getInfoFlag( false )
+    , m_validity( false )
 {
     if( !address.contains( "." ) )
         KMessageBox::error( 0, i18n( "Invalid address" ) );
@@ -81,9 +82,18 @@ Server::Server( const QString &address )
         connect( m_socket, SIGNAL( readyRead() ), this, SLOT( parseRecievedData() ) );
         connect( m_socket, SIGNAL( error( QAbstractSocket::SocketError ) ), this, SLOT( handleSocketError( QAbstractSocket::SocketError ) ) );
 
-        // update server info
-        refreshServerInfo();
+        refreshServerInfo();    // update server info
+        m_validity = true;      // set server validity to true
     }
+
+    // invalid server address, set custom string or leave inserted one by user??
+
+    /* for now i'll leave the string inserted by the user because i delete the
+     * server object immediatly and i need the inserted address to find out which server to delete
+     * ( or i could just delete the last inserted server )
+     */
+    else  // address is empty
+        m_address = address;
 }
 
 QString Server::address() const
@@ -99,6 +109,11 @@ QString Server::currentPlayers() const
 QString Server::gametype() const
 {
     return m_gametype;
+}
+
+bool Server::isVaid() const
+{
+    return m_validity;
 }
 
 QString Server::map() const

@@ -64,7 +64,10 @@ void ServerManager::addNewServer( const QString& group, const QString& serverAdd
     }
     else {  // ADD
         auxGroup->addServer( serverAddress );
-        addServerToConfig( group, serverAddress );
+        if( auxGroup->server( auxGroup->servers()-1 )->isVaid() )     // check if last server added is valid
+            addServerToConfig( group, serverAddress );
+        else
+            auxGroup->deleteServer( serverAddress );
     }
 }
 

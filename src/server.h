@@ -45,6 +45,7 @@ public:
     QString address() const;                // get server address
     QString currentPlayers() const;         // get server current players in game
     QString gametype() const;               // get server gametype
+    bool isVaid() const;                    // returns validity of server
     QString map() const;                    // get server map
     QString maxPlayers() const;             // get server maxplayers allowed
     QString name() const;                   // get server name
@@ -77,7 +78,8 @@ private:
     int m_port;             // server port
     QUdpSocket *m_socket;   // server socket
 
-    bool m_getInfoFlag;   // flag to determine which command i'm waiting for when parsing data in response
+    bool m_getInfoFlag      // flag to determine which command i'm waiting for when parsing data in response
+    , m_validity;            // flag to determine validity of server
 };
 
 #endif

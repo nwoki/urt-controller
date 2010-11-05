@@ -37,6 +37,24 @@ void ServerGroup::addServer(const QString& address )
     m_servers.push_back( auxServer );
 }
 
+void ServerGroup::deleteServer( const QString& address )
+{
+    qDebug( "sERVERgroup::deleteserver" );
+    Server *auxServer = 0;
+    bool found = false;
+
+    for( int i = 0; i < m_servers.count() && !found; i++ ) {
+        if( m_servers.at( i )->address() == address ) {
+            qDebug( "FOUND" );
+            auxServer = m_servers.at( i );
+            m_servers.remove( i );
+            found = true;
+        }
+    }
+
+    delete auxServer;
+}
+
 QString ServerGroup::groupName() const
 {
     return m_groupName;

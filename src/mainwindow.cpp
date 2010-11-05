@@ -259,15 +259,15 @@ void MainWindow::setupMenu()
     KToolBar *toolBar = new KToolBar( this );
 
     // menu actions
-    m_addServerGroupAction = new KAction( KIcon( "list-add" ), i18n( "AddServerGroup" ), this );
-    m_removeServerGroupAction = new KAction( KIcon( "list-remove" ), i18n( "RemoveServerGroup" ), this );
+    m_addServerGroupAction = new KAction( KIcon( "list-add" ), i18n( "&AddServerGroup" ), this );
+    m_removeServerGroupAction = new KAction( KIcon( "list-remove" ), i18n( "&RemoveServerGroup" ), this );
     m_quitAction = new KAction( KIcon( "application-exit"), i18n( "&Quit" ), this );
     m_editServerAction = new KAction( KIcon( "network-server" ), i18n( "&EditServer" ), this );
 
     // toolbar actions ( all disabled until user clicks on a server group )
-    m_addServerAction = new KAction( KIcon( "list-add" ), i18n( "&AddServer" ), this );
+    m_addServerAction = new KAction( KIcon( "list-add" ), i18n( "AddServer" ), this );
     m_addServerAction->setEnabled( false );
-    m_removeServerAction = new KAction( KIcon( "list-remove" ), i18n( "&RemoveServer" ), this );
+    m_removeServerAction = new KAction( KIcon( "list-remove" ), i18n( "RemoveServer" ), this );
     m_removeServerAction->setEnabled( false );
     m_refreshServerAction = new KAction( KIcon( "view-refresh" ), i18n( "Re&freshServers" ), this );
     m_refreshServerAction->setEnabled( false );
