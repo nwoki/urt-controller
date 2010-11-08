@@ -134,10 +134,27 @@ void ServerManager::loadConfig()
 {
     KConfig config;
     KConfigGroup groups = config.group( "ServerGroups" );
+    KConfigGroup servers = config.group( "Servers" );
+
     QStringList groupNames = groups.groupList();
 
-    for( int i = 0; i < groupNames.size(); i++ )
-        addNewServerGroup( groupNames.at( i ) );
+    // loads server groups
+    for( int i = 0; i < groupNames.size(); i++ ) {
+        QString groupName = groupNames.at( i );
+        KConfigGroup serverGroup = groups.group( groupName );
+        QString serversGroupName = serverGroup.readEntry( "servers" );
+
+        addNewServerGroup( groupName );
+
+        KConfigGroup serversGroup = servers.group( serversGroupName );
+        QStringList serversInGroup = serversGroup.groupList();
+
+        // loads server for given group
+        for( int j = 0; j < serversInGroup.size(); j++ ) {
+            KConfigGroup server = serversGroup.group( serversInGroup.at( j )/*id*/ );
+            addNewServer( groupName, server.readEntry( "address" ) );
+        }
+    }
 }
 
 void ServerManager::refreshGroups()
