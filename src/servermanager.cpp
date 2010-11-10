@@ -62,7 +62,7 @@ void ServerManager::addNewServer( const QString& group, const QString& serverAdd
         qWarning() << "ServerManager::addNewServer ERROR: can't find servergroup: " << group;
         KMessageBox::sorry( this, "Can't find selected server group" );
     }
-    else {  // ADD
+    else {  // ADD server if valid, else delete it
         auxGroup->addServer( serverAddress );
         if( auxGroup->server( auxGroup->servers()-1 )->isVaid() )     // check if last server added is valid
             addServerToConfig( group, serverAddress );
@@ -108,15 +108,25 @@ void ServerManager::refreshServersTableViaListClick( QString groupName )
 void ServerManager::addServerToConfig( const QString& groupName, const QString &address )
 {
     KConfig config;
+    bool foundMatch = false;
     KConfigGroup serverGroups = config.group( "ServerGroups" );
     KConfigGroup subGroup = serverGroups.group( groupName );        // get the group to add server to
     QString serversGroupName = subGroup.readEntry( "servers" );
-
     KConfigGroup servers = config.group( "Servers" );
     KConfigGroup serversGroup = servers.group( serversGroupName );
-    int id = serversGroup.groupList().count() + 1;
-    KConfigGroup newId = serversGroup.group( QString::number( id ) );
-    newId.writeEntry( "address", address );
+
+    // check if server already exists
+    for( int i = 0; i < serversGroup.groupList().count(); i++ ) {
+        KConfigGroup id = serversGroup.group( serversGroup.groupList().at( i ) );
+        if( id.readEntry( "address" ) == address )
+            foundMatch = true;                                      // found match. Set flag
+    }
+
+    if( !foundMatch ) {                                               // add server to config
+        int id = serversGroup.groupList().count() + 1;
+        KConfigGroup newId = serversGroup.group( QString::number( id ) );
+        newId.writeEntry( "address", address );
+    }
     config.sync();
 }
 
